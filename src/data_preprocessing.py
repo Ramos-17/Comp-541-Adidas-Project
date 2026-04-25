@@ -16,11 +16,43 @@ def load_data() -> pd.DataFrame:
 
 
 def data_cleaning(df: pd.DataFrame) -> pd.DataFrame:
-    return df
+    df = df.copy()
 
-def data_transformation(df: pd.DataFrame) -> pd.DataFrame:
+    # Standardize column names
+    df.columns = [c.strip() for c in df.columns]
+
+    # Drop duplicates
+    df = df.drop_duplicates()
+
+    # Parse dates if present
+    if "Order_Date" in df.columns:
+        df["Order_Date"] = pd.to_datetime(df["Order_Date"], errors="coerce")
+
+    # Fill missing values: numeric -> median, categorical -> mode
+    numeric_cols = df.select_dtypes(include=("number")).columns
+    cat_cols = df.select_dtypes(include=("object", "category")).columns
+
+    for col in numeric_cols:
+        if df[col].isna().any():
+            df[col] = df[col].fillna(df[col].median())
+
+    for col in cat_cols:
+        if df[col].isna().any():
+            mode_val = df[col].mode(dropna=True)
+            fill_val = mode_val.iloc[0] if not mode_val.empty else "Unknown"
+            df[col] = df[col].fillna(fill_val)
+
+    return df
+def data_transformation(df: pd.DataFrame, columns: list) -> pd.DataFrame:
+    df = df.copy()
+    
     # Convert Order_Date from string type to pandas datatime type
     df['Order_Date'] = pd.to_datetime(df['Order_Date'])
+    
+    # Apply log transformation to specified columns to reduce skewness
+    for col in columns:
+        if col in df.columns:
+            df[col] = np.log1p(df[col].clip(lower=0))
     return df
 
 def feature_selection(df: pd.DataFrame) -> pd.DataFrame:

@@ -1,0 +1,11 @@
+{
+  "export_type": "full-series-training",
+  "model": "LSTM",
+  "target": "Profit",
+  "window": 10,
+  "epochs": 50,
+  "seed": 42,
+  "series_start": "2023-01-02",
+  "series_end": "2025-09-30",
+  "n_days": 1003
+}

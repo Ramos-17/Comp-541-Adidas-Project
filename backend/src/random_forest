@@ -1,4 +1,4 @@
-'''Random Forest Model - CS 541 final project '''
+'''Random Forest Model - CS 541 final project - By Fazlul H Faizal'''
 
 import pandas as pd
 import numpy as np
